@@ -417,6 +417,23 @@ public class OneSignal {
    private static TrackFirebaseAnalytics trackFirebaseAnalytics;
 
    public static final String VERSION = "031205";
+   
+   public static void displayMessage(Context context, Intent intent) {
+      Bundle bundle = intent.getExtras();
+      if (bundle == null) {
+         return;
+      }
+
+      NotificationBundleProcessor.ProcessedBundleResult processedResult = NotificationBundleProcessor.processBundleFromReceiver(context, bundle);
+
+      if (processedResult.processed())
+         return;
+
+      NotificationGenerationJob notifJob = new NotificationGenerationJob(context);
+      notifJob.jsonPayload = NotificationBundleProcessor.bundleAsJSONObject(bundle);
+
+      NotificationBundleProcessor.ProcessJobForDisplay(notifJob);
+   }
 
    private static OSSessionManager.SessionListener getNewSessionListener() {
       return new OSSessionManager.SessionListener() {
